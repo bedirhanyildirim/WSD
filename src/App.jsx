@@ -1,5 +1,8 @@
+import { useRoutes } from "react-router-dom";
+import routes from "./routers/index";
+
 function App() {
-  return <>Hoşgeldin</>;
+  return useRoutes(routes);
 }
 
 export default App;
