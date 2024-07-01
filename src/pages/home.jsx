@@ -1,33 +1,70 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
-import { Check, X } from "lucide-react";
+import { Loader, Check, X } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchProducts } from "../store/productSlice";
 
-const apiUrl = import.meta.env.VITE_URL + "/wp-json/wc/v3/products";
-const consumerKey = import.meta.env.VITE_CONSUMER_KEY;
-const consumerSecret = import.meta.env.VITE_CONSUMER_SECRET;
-
-const fetchProducts = async () => {
-  const auth = {
-    username: consumerKey,
-    password: consumerSecret,
-  };
-
-  try {
-    const response = await axios.get(apiUrl, {
-      params: {
-        per_page: 100,
-      },
-      auth,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    return [];
-  }
+const currencyMap = {
+  "orzax-inc": "$",
+  "orzax-ltd": "£",
+  "orzax-spzoo": "PLN",
+  "orzax-gmbh": "€",
 };
+
+const isDataStale = (lastFetchTime, maxAgeMinutes) => {
+  const now = new Date();
+  const lastFetch = new Date(lastFetchTime);
+  const diffMs = now - lastFetch;
+  const diffMins = Math.floor(diffMs / 60000);
+  return diffMins > maxAgeMinutes;
+};
+
+export default function Home() {
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.products.items);
+  const productStatus = useSelector((state) => state.products.status);
+  const error = useSelector((state) => state.products.error);
+  const [selectedCompany, setSelectedCompany] = useState("orzax-inc");
+
+  const defaultCurrency = currencyMap[selectedCompany] || "$";
+
+  useEffect(() => {
+    const cachedProducts = JSON.parse(localStorage.getItem("products"));
+    const lastFetchTime = localStorage.getItem("fetchTime");
+
+    if (cachedProducts && lastFetchTime && !isDataStale(lastFetchTime, 15)) {
+      // Cache'deki verileri kullan
+      dispatch({
+        type: "products/fetchProducts/fulfilled",
+        payload: cachedProducts,
+      });
+    } else {
+      // Verileri yeniden fetch et
+      dispatch(fetchProducts());
+    }
+  }, [dispatch]);
+
+  return (
+    <>
+      <Header setSelectedCompany={setSelectedCompany} />
+      <div className="w-full max-w-5xl mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Ürünler</h1>
+        {productStatus === "loading" ? (
+          <div className="flex justify-center items-center">
+            <Loader className="animate-spin" />
+            <p className="ml-2">Veriler yükleniyor...</p>
+          </div>
+        ) : productStatus === "succeeded" ? (
+          <ProductTable products={products} defaultCurrency={defaultCurrency} />
+        ) : productStatus === "failed" ? (
+          <div>{error}</div>
+        ) : null}
+      </div>
+    </>
+  );
+}
 
 const getUniqueCategories = (categories) => {
   const uniqueCategories = [
@@ -42,37 +79,11 @@ const decodeHtml = (html) => {
   return txt.value.replace(/&amp;/g, "&");
 };
 
-export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Header = ({ setSelectedCompany }) => {
+  const handleSelectChange = (e) => {
+    setSelectedCompany(e.target.value);
+  };
 
-  useEffect(() => {
-    const fetchProductsData = async () => {
-      setLoading(true);
-      const productsData = await fetchProducts();
-      setProducts(productsData);
-      setLoading(false);
-    };
-
-    fetchProductsData();
-  }, []);
-
-  return (
-    <>
-      <Header />
-      <div className="w-full max-w-5xl mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Son 20 Ürün</h1>
-        {loading ? (
-          <p>Veriler yükleniyor...</p>
-        ) : (
-          <ProductTable products={products} />
-        )}
-      </div>
-    </>
-  );
-}
-
-const Header = () => {
   return (
     <div className="w-full flex justify-center">
       <div className="w-full max-w-5xl px-2 py-4 flex items-center justify-between gap-4">
@@ -80,9 +91,11 @@ const Header = () => {
         <select
           className="p-2 w-44 border border-zinc-300 rounded"
           defaultValue="orzax-inc"
+          onChange={handleSelectChange}
         >
           <option value="orzax-inc">Orzax Inc.</option>
           <option value="orzax-ltd">Orzax Ltd.</option>
+          <option value="orzax-gmbh">Orzax GmbH</option>
           <option value="orzax-spzoo">Orzax Sp. z o.o.</option>
         </select>
       </div>
@@ -90,7 +103,7 @@ const Header = () => {
   );
 };
 
-const ProductTable = ({ products }) => {
+const ProductTable = ({ products, defaultCurrency }) => {
   return (
     <table className="min-w-full bg-white border border-gray-300">
       <thead>
@@ -108,8 +121,8 @@ const ProductTable = ({ products }) => {
           <tr key={product.id}>
             <td className="py-2 px-4 border-b">{product.id}</td>
             <td className="py-2 px-4 border-b">{decodeHtml(product.name)}</td>
-            <td className="py-2 px-4 border-b">
-              {product.price} {product.currency}
+            <td className="py-2 px-4 border-b whitespace-nowrap">
+              {defaultCurrency} {product.price}
             </td>
             <td className="py-2 px-4 border-b text-center">
               <div className="flex justify-center items-center">
@@ -120,7 +133,6 @@ const ProductTable = ({ products }) => {
                 )}
               </div>
             </td>
-
             <td className="py-2 px-4 border-b">
               {getUniqueCategories(product.categories)}
             </td>
