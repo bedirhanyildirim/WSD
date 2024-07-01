@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const apiUrl = import.meta.env.VITE_URL + "/wp-json/wc/v3/products";
+const apiUrl = import.meta.env.VITE_URL + "/wp-json/wc/v3/orders";
 const consumerKey = import.meta.env.VITE_CONSUMER_KEY;
 const consumerSecret = import.meta.env.VITE_CONSUMER_SECRET;
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
+export const fetchOrders = createAsyncThunk('orders/fetchOrders', async () => {
   const auth = {
     username: consumerKey,
     password: consumerSecret,
@@ -18,16 +18,16 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async ()
     auth,
   });
 
-  const productsData = response.data;
+  const ordersData = response.data;
   const fetchTime = new Date().toISOString();
-  localStorage.setItem('products', JSON.stringify(productsData));
-  localStorage.setItem('fetchTime', fetchTime);
+  localStorage.setItem('orders', JSON.stringify(ordersData));
+  localStorage.setItem('ordersFetchTime', fetchTime);
 
-  return productsData;
+  return ordersData;
 });
 
-const productSlice = createSlice({
-  name: 'products',
+const ordersSlice = createSlice({
+  name: 'orders',
   initialState: {
     items: [],
     status: 'idle',
@@ -36,18 +36,18 @@ const productSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchProducts.pending, (state) => {
+      .addCase(fetchOrders.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchProducts.fulfilled, (state, action) => {
+      .addCase(fetchOrders.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.items = action.payload;
       })
-      .addCase(fetchProducts.rejected, (state, action) => {
+      .addCase(fetchOrders.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });
   },
 });
 
-export default productSlice.reducer;
+export default ordersSlice.reducer;
