@@ -1,7 +1,8 @@
 import { useDispatch } from "react-redux";
 import { setSelectedCountry } from "../store/countrySlice";
 import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { Radio } from "lucide-react";
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -36,18 +37,47 @@ export const Header = () => {
   );
 };
 
+const getNavLinkClass = (isActive, baseClasses = "") =>
+  isActive ? `${baseClasses} font-bold` : baseClasses;
+
 const Navbar = () => {
   return (
     <div className="w-full px-4 py-3 border-b">
       <ul className="flex gap-10 items-center justify-center">
         <li>
-          <Link to="/">Dashboard</Link>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              getNavLinkClass(isActive, "text-red-600 flex gap-1 items-center")
+            }
+          >
+            <Radio size={20} className="animate-pulse" />
+            Live
+          </NavLink>
         </li>
         <li>
-          <Link to="/products">Products</Link>
+          <NavLink
+            to="/analytics"
+            className={({ isActive }) => getNavLinkClass(isActive)}
+          >
+            Analytics
+          </NavLink>
         </li>
         <li>
-          <Link to="/orders">Orders</Link>
+          <NavLink
+            to="/products"
+            className={({ isActive }) => getNavLinkClass(isActive)}
+          >
+            Products
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/orders"
+            className={({ isActive }) => getNavLinkClass(isActive)}
+          >
+            Orders
+          </NavLink>
         </li>
       </ul>
     </div>
