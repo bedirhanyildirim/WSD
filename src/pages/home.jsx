@@ -61,12 +61,15 @@ export default function Home() {
           <p className="ml-2">Veriler yükleniyor...</p>
         </div>
       ) : productStatus === "succeeded" ? (
-        <KPIwrapper
-          productCount={products.length}
-          singleProductCount={singleProductCount}
-          bundleProductCount={bundleProductCount}
-          draftProductCount={draftProductCount}
-        />
+        <div className="flex flex-col gap-4">
+          <TimePeriedButtonGroup />
+          <KPIwrapper
+            productCount={products.length}
+            singleProductCount={singleProductCount}
+            bundleProductCount={bundleProductCount}
+            draftProductCount={draftProductCount}
+          />
+        </div>
       ) : productStatus === "failed" ? (
         <div className="w-full flex justify-center">
           <div className="w-full max-w-5xl p-4">{productError}</div>
@@ -75,6 +78,35 @@ export default function Home() {
     </>
   );
 }
+
+const TimePeriedButtonGroup = () => {
+  return (
+    <div className="w-full flex justify-center mt-4">
+      <div className="w-full max-w-5xl">
+        <div className="w-full flex gap-4">
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            Today
+          </div>
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            This Week
+          </div>
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            This Month
+          </div>
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            Last 7 Days
+          </div>
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            Last 30 Days
+          </div>
+          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
+            Last 31 Days
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const KPIwrapper = ({
   productCount,
@@ -86,7 +118,7 @@ const KPIwrapper = ({
   return (
     <div className="w-full flex justify-center">
       <div className="w-full max-w-5xl">
-        <div className="w-full grid gap-2 mt-4 grid-cols-3">
+        <div className="w-full grid gap-2 grid-cols-3">
           <KPIbox
             title="Products on Sale"
             value={productCount - draftProductCount}
@@ -114,7 +146,7 @@ const KPIwrapper = ({
 
 const KPIbox = ({ title = "", value = "", subtitle = "" }) => {
   return (
-    <div className="w-full flex flex-col p-4 bg-slate-100 rounded gap-2">
+    <div className="w-full flex flex-col p-4 bg-slate-100 border border-slate-200 rounded gap-2">
       <div className="text-sm text-gray-700">{title}</div>
       <div className="text-4xl">{value}</div>
       {subtitle && <div className="text-xs text-gray-500">{subtitle}</div>}
