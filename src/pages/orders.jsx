@@ -11,10 +11,12 @@ export default function Orders() {
   const orders = useSelector((state) => state.orders.items);
   const orderStatus = useSelector((state) => state.orders.status);
   const orderError = useSelector((state) => state.orders.error);
+  const selectedCompany = useSelector((state) => state.country.selectedCountry);
 
   useEffect(() => {
-    const cachedOrders = JSON.parse(localStorage.getItem("orders"));
-    const orderLastFetchTime = localStorage.getItem("ordersFetchTime");
+    const cachedOrders = JSON.parse(
+    localStorage.getItem(`${selectedCompany}_orders`));
+    const orderLastFetchTime = localStorage.getItem(`${selectedCompany}_ordersFetchTime`);
 
     if (
       cachedOrders &&
@@ -27,7 +29,7 @@ export default function Orders() {
       // Verileri yeniden fetch et
       dispatch(fetchOrders());
     }
-  }, [dispatch]);
+  }, [dispatch, selectedCompany]);
 
   return (
     <>

@@ -5,7 +5,7 @@ const apiUrl = import.meta.env.VITE_URL + "/wp-json/wc/v3/products";
 const consumerKey = import.meta.env.VITE_CONSUMER_KEY;
 const consumerSecret = import.meta.env.VITE_CONSUMER_SECRET;
 
-export const fetchProducts = createAsyncThunk('products/fetchProducts', async () => {
+export const fetchProducts = createAsyncThunk('products/fetchProducts', async (selectedCompany) => {
   const auth = {
     username: consumerKey,
     password: consumerSecret,
@@ -20,8 +20,8 @@ export const fetchProducts = createAsyncThunk('products/fetchProducts', async ()
 
   const productsData = response.data;
   const fetchTime = new Date().toISOString();
-  localStorage.setItem('products', JSON.stringify(productsData));
-  localStorage.setItem('fetchTime', fetchTime);
+  localStorage.setItem(`${selectedCompany}_products`, JSON.stringify(productsData));
+  localStorage.setItem(`${selectedCompany}_fetchTime`, fetchTime);
 
   return productsData;
 });

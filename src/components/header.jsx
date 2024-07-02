@@ -18,7 +18,7 @@ export const Header = () => {
             <img src={logo} width={140} alt="Orzax Logo png" />
           </a>
           <select
-            className="p-2 w-44 border border-zinc-300 rounded"
+            className="p-2 w-48 border border-zinc-300 rounded"
             defaultValue={
               localStorage.getItem("selectedCountry") || "orzax-inc"
             }

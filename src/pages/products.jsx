@@ -22,8 +22,10 @@ export default function Products() {
   const defaultCurrency = currencyMap[selectedCompany] || "$";
 
   useEffect(() => {
-    const cachedProducts = JSON.parse(localStorage.getItem("products"));
-    const lastFetchTime = localStorage.getItem("fetchTime");
+    const cachedProducts = JSON.parse(
+      localStorage.getItem(`${selectedCompany}_products`)
+    );
+    const lastFetchTime = localStorage.getItem(`${selectedCompany}_fetchTime`);
 
     if (cachedProducts && lastFetchTime && !isDataStale(lastFetchTime, 15)) {
       dispatch({
@@ -33,7 +35,7 @@ export default function Products() {
     } else {
       dispatch(fetchProducts());
     }
-  }, [dispatch]);
+  }, [dispatch, selectedCompany]);
 
   return (
     <>
