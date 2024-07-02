@@ -3,15 +3,8 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchOrders } from "../store/ordersSlice";
 import { Loader } from "lucide-react";
-import { Header } from "./home";
-
-const isDataStale = (lastFetchTime, maxAgeMinutes) => {
-  const now = new Date();
-  const lastFetch = new Date(lastFetchTime);
-  const diffMs = now - lastFetch;
-  const diffMins = Math.floor(diffMs / 60000);
-  return diffMins > maxAgeMinutes;
-};
+import { Header } from "../components/header";
+import { isDataStale } from "../lib/utils";
 
 export default function Orders() {
   const dispatch = useDispatch();
@@ -71,13 +64,26 @@ const OrderTable = ({ orders }) => {
       <tbody>
         {orders.map((order) => (
           <tr key={order.id}>
-            <td className="py-2 px-4 border-b">{order.id}</td>
+            <td className="py-2 px-4 border-b text-center">
+              <a
+                href={
+                  import.meta.env.VITE_URL +
+                  "/wp-admin/post.php?post=" +
+                  order.id +
+                  "&action=edit"
+                }
+                target="_blank"
+                className="underline text-blue-700"
+              >
+                {order.id}
+              </a>
+            </td>
             <td className="py-2 px-4 border-b">
               {order.billing.first_name} {order.billing.last_name}
             </td>
-            <td className="py-2 px-4 border-b">{order.total}</td>
-            <td className="py-2 px-4 border-b">{order.status}</td>
-            <td className="py-2 px-4 border-b">
+            <td className="py-2 px-4 border-b text-center">${order.total}</td>
+            <td className="py-2 px-4 border-b text-center">{order.status}</td>
+            <td className="py-2 px-4 border-b text-center">
               {new Date(order.date_created).toLocaleDateString()}
             </td>
           </tr>
