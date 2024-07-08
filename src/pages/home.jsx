@@ -1,11 +1,16 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import { Header } from "../components/header";
+import { Header } from "../components/theme/header";
 import { fetchProducts } from "../store/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { currencyMap, isDataStale } from "../lib/utils";
-import { Loader } from "lucide-react";
+
+import USALiveDashboard from "../components/usa/live";
+import UKLiveDashboard from "../components/uk/live";
+import PLLiveDashboard from "../components/pl/live";
+import DELiveDashboard from "../components/de/live";
+import LoaderComponent from "../components/common/loader";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -49,64 +54,30 @@ export default function Home() {
     }
   }, [products]);
 
+  const renderDashboard = () => {
+    switch (selectedCompany) {
+      case "orzax-inc":
+        return <USALiveDashboard />;
+      case "orzax-ltd":
+        return <UKLiveDashboard />;
+      case "orzax-spzoo":
+        return <PLLiveDashboard />;
+      case "orzax-gmbh":
+        return <DELiveDashboard />;
+      default:
+        return <div>Please select a company.</div>;
+    }
+  };
+
   return (
     <>
       <Header />
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-5xl"></div>
+      <div className="w-full flex justify-center my-4">
+        <div className="w-full max-w-5xl">{renderDashboard()}</div>
       </div>
-      {productStatus === "loading" ? (
-        <div className="flex justify-center items-center p-4">
-          <Loader className="animate-spin" />
-          <p className="ml-2">Veriler yükleniyor...</p>
-        </div>
-      ) : productStatus === "succeeded" ? (
-        <div className="flex flex-col gap-4">
-          <TimePeriedButtonGroup />
-          <KPIwrapper
-            productCount={products.length}
-            singleProductCount={singleProductCount}
-            bundleProductCount={bundleProductCount}
-            draftProductCount={draftProductCount}
-          />
-        </div>
-      ) : productStatus === "failed" ? (
-        <div className="w-full flex justify-center">
-          <div className="w-full max-w-5xl p-4">{productError}</div>
-        </div>
-      ) : null}
     </>
   );
 }
-
-const TimePeriedButtonGroup = () => {
-  return (
-    <div className="w-full flex justify-center mt-4">
-      <div className="w-full max-w-5xl">
-        <div className="w-full flex gap-4">
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            Today
-          </div>
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            This Week
-          </div>
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            This Month
-          </div>
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            Last 7 Days
-          </div>
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            Last 30 Days
-          </div>
-          <div className="text-sm bg-slate-100 border border-slate-200 rounded py-1.5 px-3 hover:bg-slate-200 hover:cursor-pointer">
-            Last 31 Days
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const KPIwrapper = ({
   productCount,

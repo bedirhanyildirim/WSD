@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchOrders } from "../store/ordersSlice";
 import { Loader } from "lucide-react";
-import { Header } from "../components/header";
+import { Header } from "../components/theme/header";
 import { isDataStale } from "../lib/utils";
 
 export default function Orders() {

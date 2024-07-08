@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader, Check, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../store/productSlice";
-import { Header } from "../components/header";
+import { Header } from "../components/theme/header";
 import {
   isDataStale,
   currencyMap,

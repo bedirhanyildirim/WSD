@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { setSelectedCountry } from "../store/countrySlice";
-import logo from "../assets/logo.png";
+import { setSelectedCountry } from "../../store/countrySlice";
+import logo from "../../assets/logo.png";
 import { NavLink } from "react-router-dom";
 import { Radio } from "lucide-react";
 
@@ -27,7 +27,7 @@ export const Header = () => {
           >
             <option value="orzax-inc">USA | Orzax Inc.</option>
             <option value="orzax-ltd">UK | Orzax Ltd.</option>
-            <option value="orzax-gmbh">D | Orzax GmbH</option>
+            <option value="orzax-gmbh">DE | Orzax GmbH</option>
             <option value="orzax-spzoo">PL | Orzax Sp. z o.o.</option>
           </select>
         </div>
